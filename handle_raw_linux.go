@@ -8,11 +8,12 @@ import (
 
 type rawTimerHandle struct {
 	stop chan<- struct{}
-	sig chan struct{}
+	sig  chan struct{}
 }
 
 func newRawTimerHandle() (t rawTimerHandle, err error) {
 	t.sig = make(chan struct{})
+	return
 }
 
 func (t *rawTimerHandle) waitfor(stop <-chan struct{}, d time.Duration) (err error) {
@@ -29,7 +30,7 @@ func (t *rawTimerHandle) waitfor(stop <-chan struct{}, d time.Duration) (err err
 	case <-stop:
 	case <-time.After(d):
 		select {
-		case t.sig <- struct{}:
+		case t.sig <- struct{}{}:
 		default:
 		}
 	}
@@ -67,14 +68,14 @@ func (t *rawTimerHandle) Start(wait, period time.Duration) (err error) {
 func (t *rawTimerHandle) Wait(timeout time.Duration) (again bool, err error) {
 	select {
 	case <-t.sig:
-	case <-time.After(d):
+	case <-time.After(timeout):
 		again = true
 	}
 	return
 }
 
 func (t *rawTimerHandle) Close() {
-	close(stop)
+	close(t.stop)
 }
 
 func raw(d time.Duration) (err error) {
