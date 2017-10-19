@@ -12,7 +12,7 @@ type rawTimerHandle struct {
 }
 
 func newRawTimerHandle() (t rawTimerHandle, err error) {
-	t.sig = make(chan struct{})
+	t.sig = make(chan struct{}, 1)
 	return
 }
 
