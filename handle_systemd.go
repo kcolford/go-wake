@@ -20,6 +20,8 @@ func newSdTimerHandle() (t sdTimerHandle, err error) {
 		return
 	}
 	t.conn, err = sddbus.New()
+
+	err = NotImplemented
 	return
 }
 
@@ -28,5 +30,9 @@ func (t *sdTimerHandle) Close() {
 }
 
 func (t *sdTimerHandle) Start(wait, period time.Duration) (err error) {
+	return
+}
+
+func (t *sdTimerHandle) Wait(timeout time.Duration) (err error) {
 	return
 }
