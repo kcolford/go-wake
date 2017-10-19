@@ -10,17 +10,17 @@ var NotImplemented = errors.New("not implemented")
 
 type Timer struct {
 	*time.Timer
-	h *timerHandle
+	h timerHandle
 }
 
 func newTimer(d time.Duration, ti *time.Timer) (t *Timer) {
 	t = &Timer{ti, nil}
-	h, err := newTimerHandle()
+	var err error
+	t.h, err = newTimerHandle()
 	if err != nil {
 		return
 	}
-	t.h = &h
-	runtime.SetFinalizer(t.h, func(h *timerHandle) {
+	runtime.SetFinalizer(t.h, func(h timerHandle) {
 		h.Close()
 	})
 	t.h.Start(d, 0)
@@ -69,17 +69,17 @@ func (t *Timer) Reset(d time.Duration) (active bool) {
 
 type Ticker struct {
 	*time.Ticker
-	h *timerHandle
+	h timerHandle
 }
 
 func NewTicker(d time.Duration) *Ticker {
 	t := &Ticker{time.NewTicker(d), nil}
-	h, err := newTimerHandle()
+	var err error
+	t.h, err = newTimerHandle()
 	if err != nil {
 		return t
 	}
-	t.h = &h
-	runtime.SetFinalizer(t.h, func(h *timerHandle) {
+	runtime.SetFinalizer(t.h, func(h timerHandle) {
 		h.Close()
 	})
 	t.h.Start(d, d)
