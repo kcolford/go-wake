@@ -13,6 +13,7 @@ type sysfsTimerHandle struct {
 
 func newSysfsTimerHandle() (t sysfsTimerHandle, err error) {
 	t.sig = make(chan struct{}, 1)
+	t.stop = make(chan struct{})
 	return
 }
 
