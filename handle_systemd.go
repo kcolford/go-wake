@@ -33,6 +33,6 @@ func (t *sdTimerHandle) Start(wait, period time.Duration) (err error) {
 	return
 }
 
-func (t *sdTimerHandle) Wait(timeout time.Duration) (err error) {
+func (t *sdTimerHandle) Wait(timeout time.Duration) (again bool, err error) {
 	return
 }
