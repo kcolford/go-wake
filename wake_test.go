@@ -18,6 +18,9 @@ func TestAfter(t *testing.T) {
 func TestPreventSleep(t *testing.T) {
 	err := PreventSleep()
 	if err != nil {
+		if err == NotImplemented {
+			t.Skip(err)
+		}
 		t.Fatal(err)
 	}
 	err = AllowSleep()
