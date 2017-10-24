@@ -1,17 +1,24 @@
 package wake
 
-import "log"
+import (
+	"fmt"
+	"log"
+)
 
 func go_(fn func()) {
 	go func() {
-		defer func() {
-			err := recover()
-			if err != nil {
-				log.Print("panic: %s", err)
-			}
-		}()
+		defer func() { ignore_(recover_()) }()
 		fn()
 	}()
+}
+
+func recover_() (err error) {
+	var ok bool
+	pnc := recover()
+	if err, ok = pnc.(error); !ok {
+		err = fmt.Errorf("panic: %s", pnc)
+	}
+	return
 }
 
 func ignore_(err error) {
