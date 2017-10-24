@@ -25,7 +25,7 @@ type winTimerHandle struct {
 
 func newWinTimerHandle() (h *winTimerHandle, err error) {
 	// https://msdn.microsoft.com/en-us/library/windows/desktop/ms682492(v=vs.85).aspx
-	hdl, _, err = createWaitableTimer.Call(0, 0, 0)
+	hdl, _, err := createWaitableTimer.Call(0, 0, 0)
 	if h.hdl != 0 {
 		err = nil
 	}
@@ -48,7 +48,7 @@ func (h *winTimerHandle) Close() {
 func (h *winTimerHandle) Start(wait, period time.Duration) (err error) {
 	// https://msdn.microsoft.com/en-us/library/windows/desktop/ms686289(v=vs.85).aspx
 	duetime := -int64(wait / time.Nanosecond / 100)
-	ok, _, err = setWaitableTimer.Call(h.hdl,
+	ok, _, err := setWaitableTimer.Call(h.hdl,
 		uintptr(unsafe.Pointer(&duetime)),
 		uintptr(period/time.Millisecond), 0, 0, 1)
 	if ok != 0 {
