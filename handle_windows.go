@@ -3,6 +3,8 @@ package wake
 import (
 	"time"
 	"unsafe"
+
+	builtins "github.com/kcolford/go-builtins"
 )
 
 var (
@@ -42,7 +44,7 @@ func (h *winTimerHandle) Close() {
 	if ok != 0 {
 		err = nil
 	}
-	ignore_(err)
+	builtins.Ignore(err)
 }
 
 func (h *winTimerHandle) Start(wait, period time.Duration) (err error) {

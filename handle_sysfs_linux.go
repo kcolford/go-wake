@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 	"time"
+
+	builtins "github.com/kcolford/go-builtins"
 )
 
 type sysfsTimerHandle struct {
@@ -44,7 +46,7 @@ func (t *sysfsTimerHandle) Start(wait, period time.Duration) (err error) {
 	// doesn't cause a race condition when we modify t
 	stop := make(chan struct{})
 	t.stop = stop
-	go_(func() {
+	builtins.Go(func() {
 		t.waitfor(stop, wait)
 		select {
 		case <-stop:

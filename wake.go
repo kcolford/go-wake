@@ -4,6 +4,8 @@ import (
 	"errors"
 	"runtime"
 	"time"
+
+	builtins "github.com/kcolford/go-builtins"
 )
 
 var NotImplemented = errors.New("not implemented")
@@ -17,6 +19,7 @@ func newTimer(d time.Duration, ti *time.Timer) (t *Timer) {
 	t = &Timer{ti, nil}
 	var err error
 	t.h, err = newTimerHandle()
+	builtins.Ignore(err)
 	if err != nil {
 		return
 	}
@@ -24,11 +27,11 @@ func newTimer(d time.Duration, ti *time.Timer) (t *Timer) {
 		h.Close()
 	})
 	err = t.h.Start(d, 0)
-	ignore_(err)
+	builtins.Ignore(err)
 	if err != nil {
 		return
 	}
-	go_(func() { keepAlive(t.h) })
+	builtins.Go(func() { builtins.Ignore(keepAlive(t.h)) })
 	return
 }
 
@@ -36,12 +39,12 @@ func (t *Timer) Reset(d time.Duration) (active bool) {
 	active = t.Timer.Reset(d)
 	if t.h != nil {
 		err := t.h.Start(d, 0)
-		ignore_(err)
+		builtins.Ignore(err)
 		if err != nil {
 			return
 		}
 
-		go_(func() { keepAlive(t.h) })
+		builtins.Go(func() { keepAlive(t.h) })
 	}
 	return
 }
@@ -65,7 +68,7 @@ func NewTimer(d time.Duration) *Timer {
 func (t *Timer) Stop() (active bool) {
 	active = t.Timer.Stop()
 	if t.h != nil {
-		ignore_(t.h.Start(0, 0))
+		builtins.Ignore(t.h.Start(0, 0))
 	}
 	return
 }
@@ -79,7 +82,7 @@ func NewTicker(d time.Duration) (t *Ticker) {
 	t = &Ticker{time.NewTicker(d), nil}
 	var err error
 	t.h, err = newTimerHandle()
-	ignore_(err)
+	builtins.Ignore(err)
 	if err != nil {
 		return
 	}
@@ -87,17 +90,17 @@ func NewTicker(d time.Duration) (t *Ticker) {
 		h.Close()
 	})
 	err = t.h.Start(d, d)
-	ignore_(err)
+	builtins.Ignore(err)
 	if err != nil {
 		return
 	}
-	go_(func() { keepAlive(t.h) })
+	builtins.Go(func() { builtins.Ignore(keepAlive(t.h)) })
 	return
 }
 
-func keepAlive(h timerHandle) {
-	ignore_(waitAll(h))
-	runtime.KeepAlive(h)
+func keepAlive(h timerHandle) error {
+	defer runtime.KeepAlive(h)
+	return waitAll(h)
 }
 
 func waitAll(h timerHandle) (err error) {
@@ -113,7 +116,7 @@ func Tick(d time.Duration) <-chan time.Time {
 func (t *Ticker) Stop() {
 	t.Ticker.Stop()
 	if t.h != nil {
-		ignore_(t.h.Start(0, 0))
+		builtins.Ignore(t.h.Start(0, 0))
 	}
 }
 
