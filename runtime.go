@@ -5,14 +5,17 @@ import "log"
 func go_(fn func()) {
 	go func() {
 		defer func() {
-			ignore_(recover())
+			err := recover()
+			if err != nil {
+				log.Print("panic: %s", err)
+			}
 		}()
 		fn()
 	}()
 }
 
-func ignore_(err interface{}) {
+func ignore_(err error) {
 	if err != nil {
-		log.Print(err)
+		log.Printf("ignored: %s", err)
 	}
 }
