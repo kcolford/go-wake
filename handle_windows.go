@@ -23,12 +23,16 @@ type winTimerHandle struct {
 	hdl uintptr
 }
 
-func newWinTimerHandle() (h winTimerHandle, err error) {
+func newWinTimerHandle() (h *winTimerHandle, err error) {
 	// https://msdn.microsoft.com/en-us/library/windows/desktop/ms682492(v=vs.85).aspx
-	h.hdl, _, err = createWaitableTimer.Call(0, 0, 0)
+	hdl, _, err = createWaitableTimer.Call(0, 0, 0)
 	if h.hdl != 0 {
 		err = nil
 	}
+	if err != nil {
+		return
+	}
+	h = &winTimerHandle{hdl: hdl}
 	return
 }
 
@@ -70,10 +74,5 @@ func (h *winTimerHandle) Wait(timeout time.Duration) (again bool, err error) {
 }
 
 func newTimerHandle() (h timerHandle, err error) {
-	hdl, err := newWinTimerHandle()
-	if err != nil {
-		return
-	}
-	h = &hdl
-	return
+	return newWinTimerHandle()
 }
