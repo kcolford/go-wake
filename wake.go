@@ -24,10 +24,22 @@ func newTimer(d time.Duration, ti *time.Timer) (t *Timer) {
 		h.Close()
 	})
 	t.h.Start(d, 0)
-	go func() {
+	go_(func() {
 		t.h.Wait(d)
 		runtime.KeepAlive(t.h)
-	}()
+	})
+	return
+}
+
+func (t *Timer) Reset(d time.Duration) (active bool) {
+	active = t.Timer.Reset(d)
+	if t.h != nil {
+		ignore_(t.h.Start(d, 0))
+		go_(func() {
+			ignore_(t.h.Wait(d))
+			runtime.KeepAlive(t.h)
+		})
+	}
 	return
 }
 
@@ -50,19 +62,7 @@ func NewTimer(d time.Duration) *Timer {
 func (t *Timer) Stop() (active bool) {
 	active = t.Timer.Stop()
 	if t.h != nil {
-		t.h.Start(0, 0)
-	}
-	return
-}
-
-func (t *Timer) Reset(d time.Duration) (active bool) {
-	active = t.Timer.Reset(d)
-	if t.h != nil {
-		t.h.Start(d, 0)
-		go func() {
-			t.h.Wait(d)
-			runtime.KeepAlive(t.h)
-		}()
+		ignore_(t.h.Start(0, 0))
 	}
 	return
 }
@@ -76,18 +76,21 @@ func NewTicker(d time.Duration) *Ticker {
 	t := &Ticker{time.NewTicker(d), nil}
 	var err error
 	t.h, err = newTimerHandle()
+	ignore_(err)
 	if err != nil {
 		return t
 	}
 	runtime.SetFinalizer(t.h, func(h timerHandle) {
 		h.Close()
 	})
-	t.h.Start(d, d)
-	go func() {
-		for again, _ := t.h.Wait(d + time.Second); again; {
+	ignore_(t.h.Start(d, d))
+	go_(func() {
+		var err error
+		for again, err := t.h.Wait(d + time.Second); again; {
 			runtime.KeepAlive(t.h)
 		}
-	}()
+		ignore_(err)
+	})
 	return t
 }
 
@@ -98,7 +101,7 @@ func Tick(d time.Duration) <-chan time.Time {
 func (t *Ticker) Stop() {
 	t.Ticker.Stop()
 	if t.h != nil {
-		t.h.Start(0, 0)
+		ignore_(t.h.Start(0, 0))
 	}
 }
 

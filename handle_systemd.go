@@ -30,9 +30,11 @@ func (t *sdTimerHandle) Close() {
 }
 
 func (t *sdTimerHandle) Start(wait, period time.Duration) (err error) {
+	err = NotImplemented
 	return
 }
 
 func (t *sdTimerHandle) Wait(timeout time.Duration) (again bool, err error) {
+	err = NotImplemented
 	return
 }

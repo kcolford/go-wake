@@ -31,7 +31,8 @@ func newWinTimerHandle() (h winTimerHandle, err error) {
 
 func (h *winTimerHandle) Close() {
 	// https://msdn.microsoft.com/en-us/library/windows/desktop/ms724211(v=vs.85).aspx
-	closeHandle.Call(h.hdl)
+	_, _, err := closeHandle.Call(h.hdl)
+	ignore_(err)
 }
 
 func (h *winTimerHandle) Start(wait, period time.Duration) (err error) {

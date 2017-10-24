@@ -44,7 +44,7 @@ func (t *sysfsTimerHandle) Start(wait, period time.Duration) (err error) {
 	// doesn't cause a race condition when we modify t
 	stop := make(chan struct{})
 	t.stop = stop
-	go func() {
+	go_(func() {
 		t.waitfor(stop, wait)
 		select {
 		case <-stop:
@@ -62,7 +62,7 @@ func (t *sysfsTimerHandle) Start(wait, period time.Duration) (err error) {
 			default:
 			}
 		}
-	}()
+	})
 	return
 }
 
