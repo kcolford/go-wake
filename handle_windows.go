@@ -44,7 +44,7 @@ func newWinTimerHandle() (h *winTimerHandle, err error) {
 }
 
 func (h *winTimerHandle) Close() {
-	err = closeHandle.Find()
+	err := closeHandle.Find()
 	if err != nil {
 		return
 	}
