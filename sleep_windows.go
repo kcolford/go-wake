@@ -10,6 +10,11 @@ const (
 )
 
 func preventSleep() (err error) {
+	err = setThreadExecutionState.Find()
+	if err != nil {
+		return
+	}
+
 	// https://msdn.microsoft.com/en-us/library/windows/desktop/aa373208(v=vs.85).aspx
 	last, _, err := setThreadExecutionState.Call(esContinuous | esSystemRequired)
 	if last != 0 {
@@ -19,6 +24,11 @@ func preventSleep() (err error) {
 }
 
 func allowSleep() (err error) {
+	err = setThreadExecutionState.Find()
+	if err != nil {
+		return
+	}
+
 	// https://msdn.microsoft.com/en-us/library/windows/desktop/aa373208(v=vs.85).aspx
 	last, _, err := setThreadExecutionState.Call(esContinuous)
 	if last != 0 {

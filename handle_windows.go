@@ -26,6 +26,11 @@ type winTimerHandle struct {
 }
 
 func newWinTimerHandle() (h *winTimerHandle, err error) {
+	err = createWaitableTimer.Find()
+	if err != nil {
+		return
+	}
+
 	// https://msdn.microsoft.com/en-us/library/windows/desktop/ms682492(v=vs.85).aspx
 	hdl, _, err := createWaitableTimer.Call(0, 0, 0)
 	if h.hdl != 0 {
@@ -39,6 +44,11 @@ func newWinTimerHandle() (h *winTimerHandle, err error) {
 }
 
 func (h *winTimerHandle) Close() {
+	err = closeHandle.Find()
+	if err != nil {
+		return
+	}
+
 	// https://msdn.microsoft.com/en-us/library/windows/desktop/ms724211(v=vs.85).aspx
 	ok, _, err := closeHandle.Call(h.hdl)
 	if ok != 0 {
@@ -48,6 +58,11 @@ func (h *winTimerHandle) Close() {
 }
 
 func (h *winTimerHandle) Start(wait, period time.Duration) (err error) {
+	err = setWaitableTimer.Find()
+	if err != nil {
+		return
+	}
+
 	// https://msdn.microsoft.com/en-us/library/windows/desktop/ms686289(v=vs.85).aspx
 	duetime := -int64(wait / time.Nanosecond / 100)
 	ok, _, err := setWaitableTimer.Call(h.hdl,
@@ -60,6 +75,11 @@ func (h *winTimerHandle) Start(wait, period time.Duration) (err error) {
 }
 
 func (h *winTimerHandle) Wait(timeout time.Duration) (again bool, err error) {
+	err = waitForSingleObject.Find()
+	if err != nil {
+		return
+	}
+
 	// https://msdn.microsoft.com/en-us/library/windows/desktop/ms687032(v=vs.85).aspx
 	res, _, err := waitForSingleObject.Call(h.hdl,
 		uintptr(timeout/time.Millisecond))
