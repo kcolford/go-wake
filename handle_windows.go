@@ -14,13 +14,6 @@ var (
 	waitForSingleObject = kernel32.NewProc("WaitForSingleObject")
 )
 
-const (
-	waitAbandoned = 0x00000080
-	waitObject0   = 0x00000000
-	waitTimeout   = 0x00000102
-	waitFailed    = 0xFFFFFFFF
-)
-
 type winTimerHandle struct {
 	hdl uintptr
 }
@@ -81,6 +74,12 @@ func (h *winTimerHandle) Wait(timeout time.Duration) (again bool, err error) {
 	}
 
 	// https://msdn.microsoft.com/en-us/library/windows/desktop/ms687032(v=vs.85).aspx
+	const (
+		waitAbandoned = 0x00000080
+		waitObject0   = 0x00000000
+		waitTimeout   = 0x00000102
+		waitFailed    = 0xFFFFFFFF
+	)
 	res, _, err := waitForSingleObject.Call(h.hdl,
 		uintptr(timeout/time.Millisecond))
 	if res != waitFailed {
